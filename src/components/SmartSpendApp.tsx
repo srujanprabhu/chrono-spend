@@ -31,8 +31,8 @@ const SmartSpendApp: React.FC = () => {
                 </p>
               </div>
               <Button
-                onClick={() => setShowChat(true)}
-                className="fab md:relative md:bottom-0 md:right-0"
+                onClick={() => setActiveTab('chat')}
+                className="bg-gradient-to-r from-primary to-primary-hover"
               >
                 <MessageCircle className="h-5 w-5 mr-2" />
                 Chat Assistant
