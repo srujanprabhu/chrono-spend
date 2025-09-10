@@ -1,20 +1,41 @@
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { MessageCircle, Plus } from 'lucide-react';
+import { MessageCircle, Plus, LogOut, Settings } from 'lucide-react';
 import { Navigation } from '@/components/Layout/Navigation';
 import { OverviewCards } from '@/components/Dashboard/OverviewCards';
 import { SpendingChart } from '@/components/Dashboard/SpendingChart';
 import { ExpenseForm } from '@/components/Expenses/ExpenseForm';
 import { ExpenseList } from '@/components/Expenses/ExpenseList';
 import { BudgetOverview } from '@/components/Budget/BudgetOverview';
+import { BudgetSettings } from '@/components/Budget/BudgetSettings';
 import { ChatInterface } from '@/components/Chat/ChatInterface';
 import { ExpenseProvider } from '@/contexts/ExpenseContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const SmartSpendApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showChat, setShowChat] = useState(false);
+  const { user, signOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Signed out",
+        description: "You have been successfully signed out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -27,7 +48,7 @@ const SmartSpendApp: React.FC = () => {
                   SmartSpend Dashboard
                 </h1>
                 <p className="text-muted-foreground mt-1">
-                  Track your expenses intelligently with AI assistance
+                  Welcome back, {user?.email}
                 </p>
               </div>
               <Button
@@ -72,8 +93,35 @@ const SmartSpendApp: React.FC = () => {
       case 'budget':
         return (
           <div className="space-y-6">
-            <h1 className="text-3xl font-bold">Budget Tracking</h1>
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold">Budget Tracking</h1>
+              <Button
+                variant="outline"
+                onClick={() => setActiveTab('budget-settings')}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </Button>
+            </div>
             <BudgetOverview />
+          </div>
+        );
+
+      case 'budget-settings':
+        return (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => setActiveTab('budget')}
+                className="p-2"
+              >
+                ←
+              </Button>
+              <h1 className="text-3xl font-bold">Budget Settings</h1>
+            </div>
+            <BudgetSettings />
           </div>
         );
         
@@ -110,8 +158,17 @@ const SmartSpendApp: React.FC = () => {
             
             <div className="hidden md:flex items-center gap-4">
               <span className="text-sm text-muted-foreground">
-                Welcome back! 👋
+                Welcome back, {user?.email?.split('@')[0]}! 👋
               </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleSignOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
             </div>
           </div>
         </header>
