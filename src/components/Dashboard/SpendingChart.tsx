@@ -133,10 +133,10 @@ export const SpendingChart: React.FC = () => {
             <Line 
               type="monotone" 
               dataKey="amount" 
-              stroke="hsl(var(--primary))" 
+              stroke="hsl(var(--success))" 
               strokeWidth={3}
-              dot={{ fill: 'hsl(var(--primary))', strokeWidth: 2, r: 6 }}
-              activeDot={{ r: 8, stroke: 'hsl(var(--primary))', strokeWidth: 2 }}
+              dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 6 }}
+              activeDot={{ r: 8, stroke: 'hsl(var(--success))', strokeWidth: 2 }}
             />
           </LineChart>
         </ResponsiveContainer>
