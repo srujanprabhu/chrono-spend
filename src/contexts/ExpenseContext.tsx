@@ -1,15 +1,18 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext } from 'react';
 import { Expense, Budget, ChatMessage, ExpenseCategory } from '@/types/expense';
+import { useSupabaseExpenses } from '@/hooks/useSupabaseExpenses';
+import { useSupabaseBudget } from '@/hooks/useSupabaseBudget';
+import { useSupabaseChat, type ChatMessage as SupaChatMessage } from '@/hooks/useSupabaseChat';
 
 interface ExpenseContextType {
   expenses: Expense[];
   budget: Budget;
-  chatMessages: ChatMessage[];
+  chatMessages: SupaChatMessage[];
+  loading: boolean;
   addExpense: (expense: Omit<Expense, 'id' | 'timestamp'>) => void;
   deleteExpense: (id: string) => void;
   updateBudget: (budget: Partial<Budget>) => void;
-  addChatMessage: (message: Omit<ChatMessage, 'id' | 'timestamp'>) => void;
-  clearChat: () => void;
+  addChatMessage: (message: string, isUser: boolean) => void;
   getTotalSpent: (period?: 'today' | 'week' | 'month') => number;
   getCategorySpent: (category: ExpenseCategory, period?: 'today' | 'week' | 'month') => number;
   getRecentExpenses: (limit?: number) => Expense[];
@@ -96,76 +99,26 @@ const DEFAULT_BUDGET: Budget = {
 };
 
 export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [expenses, setExpenses] = useState<Expense[]>(() => {
-    const saved = localStorage.getItem('smartspend-expenses');
-    return saved ? JSON.parse(saved) : SAMPLE_EXPENSES;
-  });
+  const { 
+    expenses, 
+    loading: expensesLoading, 
+    addExpense, 
+    deleteExpense 
+  } = useSupabaseExpenses();
+  
+  const { 
+    budget, 
+    loading: budgetLoading, 
+    updateBudget 
+  } = useSupabaseBudget();
+  
+  const { 
+    chatMessages, 
+    loading: chatLoading, 
+    addChatMessage 
+  } = useSupabaseChat();
 
-  const [budget, setBudget] = useState<Budget>(() => {
-    const saved = localStorage.getItem('smartspend-budget');
-    return saved ? JSON.parse(saved) : DEFAULT_BUDGET;
-  });
-
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>(() => {
-    const saved = localStorage.getItem('smartspend-chat');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return [{
-      id: '1',
-      content: "Hi! I'm your expense assistant. You can tell me about your expenses naturally, like 'I spent $50 on groceries' and I'll add it automatically!",
-      type: 'bot',
-      timestamp: new Date(),
-    }];
-  });
-
-  // Save to localStorage
-  useEffect(() => {
-    localStorage.setItem('smartspend-expenses', JSON.stringify(expenses));
-  }, [expenses]);
-
-  useEffect(() => {
-    localStorage.setItem('smartspend-budget', JSON.stringify(budget));
-  }, [budget]);
-
-  useEffect(() => {
-    localStorage.setItem('smartspend-chat', JSON.stringify(chatMessages));
-  }, [chatMessages]);
-
-  const addExpense = (expenseData: Omit<Expense, 'id' | 'timestamp'>) => {
-    const newExpense: Expense = {
-      ...expenseData,
-      id: Date.now().toString(),
-      timestamp: new Date(),
-    };
-    setExpenses(prev => [newExpense, ...prev]);
-  };
-
-  const deleteExpense = (id: string) => {
-    setExpenses(prev => prev.filter(expense => expense.id !== id));
-  };
-
-  const updateBudget = (budgetUpdate: Partial<Budget>) => {
-    setBudget(prev => ({ ...prev, ...budgetUpdate }));
-  };
-
-  const addChatMessage = (messageData: Omit<ChatMessage, 'id' | 'timestamp'>) => {
-    const newMessage: ChatMessage = {
-      ...messageData,
-      id: Date.now().toString(),
-      timestamp: new Date(),
-    };
-    setChatMessages(prev => [...prev, newMessage]);
-  };
-
-  const clearChat = () => {
-    setChatMessages([{
-      id: '1',
-      content: "Chat cleared! How can I help you track your expenses?",
-      type: 'bot',
-      timestamp: new Date(),
-    }]);
-  };
+  const loading = expensesLoading || budgetLoading || chatLoading;
 
   const getTotalSpent = (period: 'today' | 'week' | 'month' = 'month') => {
     const now = new Date();
@@ -220,11 +173,11 @@ export const ExpenseProvider: React.FC<{ children: React.ReactNode }> = ({ child
       expenses,
       budget,
       chatMessages,
+      loading,
       addExpense,
       deleteExpense,
       updateBudget,
       addChatMessage,
-      clearChat,
       getTotalSpent,
       getCategorySpent,
       getRecentExpenses,
