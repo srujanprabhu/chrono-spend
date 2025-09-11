@@ -14,19 +14,22 @@ import { ExpenseProvider } from '@/contexts/ExpenseContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-
 const SmartSpendApp: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showChat, setShowChat] = useState(false);
-  const { user, signOut } = useAuth();
-  const { toast } = useToast();
-
+  const {
+    user,
+    signOut
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
   const handleSignOut = async () => {
     try {
       await signOut();
       toast({
         title: "Signed out",
-        description: "You have been successfully signed out.",
+        description: "You have been successfully signed out."
       });
     } catch (error) {
       toast({
@@ -36,25 +39,18 @@ const SmartSpendApp: React.FC = () => {
       });
     }
   };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">
-                  SmartSpend Dashboard
-                </h1>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent">Smartspend Dashboard</h1>
                 <p className="text-muted-foreground mt-1">
                   Welcome back, {user?.email}
                 </p>
               </div>
-              <Button
-                onClick={() => setActiveTab('chat')}
-                className="bg-gradient-to-r from-primary to-primary-hover"
-              >
+              <Button onClick={() => setActiveTab('chat')} className="bg-gradient-to-r from-primary to-primary-hover">
                 <MessageCircle className="h-5 w-5 mr-2" />
                 Chat Assistant
               </Button>
@@ -62,86 +58,56 @@ const SmartSpendApp: React.FC = () => {
             
             <OverviewCards />
             <SpendingChart />
-          </div>
-        );
-        
+          </div>;
       case 'expenses':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Expense History</h1>
-              <Button
-                onClick={() => setActiveTab('add')}
-                className="bg-gradient-to-r from-primary to-primary-hover"
-              >
+              <Button onClick={() => setActiveTab('add')} className="bg-gradient-to-r from-primary to-primary-hover">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Expense
               </Button>
             </div>
             <ExpenseList />
-          </div>
-        );
-        
+          </div>;
       case 'add':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <h1 className="text-3xl font-bold text-center">Add New Expense</h1>
             <ExpenseForm />
-          </div>
-        );
-        
+          </div>;
       case 'budget':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Budget Tracking</h1>
-              <Button
-                variant="outline"
-                onClick={() => setActiveTab('budget-settings')}
-                className="flex items-center gap-2"
-              >
+              <Button variant="outline" onClick={() => setActiveTab('budget-settings')} className="flex items-center gap-2">
                 <Settings className="h-4 w-4" />
                 Settings
               </Button>
             </div>
             <BudgetOverview />
-          </div>
-        );
-
+          </div>;
       case 'budget-settings':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                onClick={() => setActiveTab('budget')}
-                className="p-2"
-              >
+              <Button variant="ghost" onClick={() => setActiveTab('budget')} className="p-2">
                 ←
               </Button>
               <h1 className="text-3xl font-bold">Budget Settings</h1>
             </div>
             <BudgetSettings />
-          </div>
-        );
-        
+          </div>;
       case 'chat':
-        return (
-          <div className="space-y-6">
+        return <div className="space-y-6">
             <h1 className="text-3xl font-bold">AI Assistant</h1>
             <Card className="expense-card h-[600px]">
               <ChatInterface />
             </Card>
-          </div>
-        );
-        
+          </div>;
       default:
         return null;
     }
   };
-
-  return (
-    <ExpenseProvider>
+  return <ExpenseProvider>
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="bg-card border-b border-border sticky top-0 z-40">
@@ -160,12 +126,7 @@ const SmartSpendApp: React.FC = () => {
               <span className="text-sm text-muted-foreground">
                 Welcome back, {user?.email?.split('@')[0]}! 👋
               </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="flex items-center gap-2"
-              >
+              <Button variant="ghost" size="sm" onClick={handleSignOut} className="flex items-center gap-2">
                 <LogOut className="h-4 w-4" />
                 Sign Out
               </Button>
@@ -176,11 +137,7 @@ const SmartSpendApp: React.FC = () => {
         {/* Main Layout */}
         <div className="flex flex-col md:flex-row">
           {/* Sidebar Navigation */}
-          <Navigation 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab}
-            className="md:sticky md:top-20 md:h-screen"
-          />
+          <Navigation activeTab={activeTab} onTabChange={setActiveTab} className="md:sticky md:top-20 md:h-screen" />
 
           {/* Main Content */}
           <main className="flex-1 container mx-auto px-4 py-6 md:py-8">
@@ -189,16 +146,11 @@ const SmartSpendApp: React.FC = () => {
         </div>
 
         {/* Mobile Chat Overlay */}
-        {showChat && (
-          <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
+        {showChat && <div className="fixed inset-0 bg-black/50 z-50 md:hidden">
             <div className="absolute inset-x-4 top-16 bottom-4 bg-card rounded-lg shadow-xl">
               <div className="flex items-center justify-between p-4 border-b">
                 <h2 className="font-semibold">AI Assistant</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowChat(false)}
-                >
+                <Button variant="outline" size="sm" onClick={() => setShowChat(false)}>
                   Close
                 </Button>
               </div>
@@ -206,21 +158,13 @@ const SmartSpendApp: React.FC = () => {
                 <ChatInterface />
               </div>
             </div>
-          </div>
-        )}
+          </div>}
 
         {/* Floating Chat Button - Desktop */}
-        {activeTab !== 'chat' && (
-          <Button
-            onClick={() => setActiveTab('chat')}
-            className="fab hidden md:flex"
-          >
+        {activeTab !== 'chat' && <Button onClick={() => setActiveTab('chat')} className="fab hidden md:flex">
             <MessageCircle className="h-5 w-5" />
-          </Button>
-        )}
+          </Button>}
       </div>
-    </ExpenseProvider>
-  );
+    </ExpenseProvider>;
 };
-
 export default SmartSpendApp;
