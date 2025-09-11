@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { EXPENSE_CATEGORIES } from '@/types/expense';
 
 export const ChatInterface: React.FC = () => {
-  const { chatMessages, addChatMessage, addExpense, clearChat } = useExpenses();
+  const { chatMessages, addChatMessage, addExpense } = useExpenses();
   const { toast } = useToast();
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -27,24 +27,13 @@ export const ChatInterface: React.FC = () => {
   const simulateTyping = async (response: string) => {
     setIsTyping(true);
     
-    // Add typing indicator
-    addChatMessage({
-      content: "typing...",
-      type: 'bot',
-      isTyping: true,
-    });
-
     // Simulate typing delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
     
     setIsTyping(false);
     
-    // Remove typing indicator and add real message
-    addChatMessage({
-      content: response,
-      type: 'bot',
-      isTyping: false,
-    });
+    // Add real message
+    addChatMessage(response, false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,10 +44,7 @@ export const ChatInterface: React.FC = () => {
     setInput('');
 
     // Add user message
-    addChatMessage({
-      content: userMessage,
-      type: 'user',
-    });
+    addChatMessage(userMessage, true);
 
     // Handle special commands
     if (userMessage.startsWith('/')) {
@@ -102,7 +88,6 @@ export const ChatInterface: React.FC = () => {
         response = `Available commands:
 • Just tell me naturally: "I spent $50 on groceries"
 • /help - Show this help
-• /clear - Clear chat history
 • /today - Show today's expenses
 • /budget - Quick budget overview
 
@@ -111,9 +96,6 @@ Try saying things like:
 • "I bought gas for $60 yesterday" 
 • "$15 for coffee this morning"`;
         break;
-      case '/clear':
-        clearChat();
-        return;
       case '/today':
         const { getTotalSpent } = useExpenses();
         const todayTotal = getTotalSpent('today');
@@ -159,13 +141,6 @@ Try saying things like:
           >
             <HelpCircle className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={clearChat}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
       </div>
 
@@ -176,30 +151,32 @@ Try saying things like:
             key={message.id}
             className={cn(
               "flex",
-              message.type === 'user' ? "justify-end" : "justify-start"
+              message.isUser ? "justify-end" : "justify-start"
             )}
           >
             <div
               className={cn(
                 "max-w-[80%] rounded-2xl px-4 py-2",
-                message.type === 'user' 
-                  ? "chat-bubble-user" 
-                  : "chat-bubble-bot",
-                message.isTyping && "animate-pulse"
+                message.isUser 
+                  ? "bg-primary text-primary-foreground" 
+                  : "bg-muted text-muted-foreground"
               )}
             >
-              {message.isTyping ? (
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-current rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                  <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                </div>
-              ) : (
-                <p className="text-sm whitespace-pre-line">{message.content}</p>
-              )}
+              <p className="text-sm whitespace-pre-line">{message.message}</p>
             </div>
           </div>
         ))}
+        {isTyping && (
+          <div className="flex justify-start">
+            <div className="max-w-[80%] rounded-2xl px-4 py-2 bg-muted text-muted-foreground animate-pulse">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-current rounded-full animate-bounce" />
+                <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                <div className="w-2 h-2 bg-current rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+              </div>
+            </div>
+          </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 

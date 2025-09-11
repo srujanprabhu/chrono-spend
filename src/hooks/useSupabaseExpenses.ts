@@ -68,7 +68,7 @@ export const useSupabaseExpenses = () => {
         .insert({
           user_id: user.id,
           title: expense.description,
-          amount: expense.amount.toString(),
+          amount: expense.amount,
           category: expense.category,
           timestamp: new Date().toISOString()
         })

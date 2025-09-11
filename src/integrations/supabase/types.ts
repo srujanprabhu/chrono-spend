@@ -18,42 +18,48 @@ export type Database = {
         Row: {
           bills_budget: number
           created_at: string
+          education_budget: number
           entertainment_budget: number
           food_budget: number
-          health_budget: number
+          healthcare_budget: number
           id: string
           other_budget: number
           shopping_budget: number
           total_budget: number
-          transport_budget: number
+          transportation_budget: number
+          travel_budget: number
           updated_at: string
           user_id: string
         }
         Insert: {
           bills_budget?: number
           created_at?: string
+          education_budget?: number
           entertainment_budget?: number
           food_budget?: number
-          health_budget?: number
+          healthcare_budget?: number
           id?: string
           other_budget?: number
           shopping_budget?: number
           total_budget?: number
-          transport_budget?: number
+          transportation_budget?: number
+          travel_budget?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           bills_budget?: number
           created_at?: string
+          education_budget?: number
           entertainment_budget?: number
           food_budget?: number
-          health_budget?: number
+          healthcare_budget?: number
           id?: string
           other_budget?: number
           shopping_budget?: number
           total_budget?: number
-          transport_budget?: number
+          transportation_budget?: number
+          travel_budget?: number
           updated_at?: string
           user_id?: string
         }

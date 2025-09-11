@@ -45,13 +45,13 @@ export const useSupabaseBudget = () => {
           totalBudget: parseFloat(data.total_budget.toString()),
           categoryBudgets: {
             food: parseFloat(data.food_budget.toString()),
-            transportation: parseFloat(data.transport_budget.toString()),
+            transportation: parseFloat(data.transportation_budget.toString()),
             entertainment: parseFloat(data.entertainment_budget.toString()),
             shopping: parseFloat(data.shopping_budget.toString()),
             bills: parseFloat(data.bills_budget.toString()),
-            healthcare: parseFloat(data.health_budget.toString()),
-            education: 100, // Default value for missing field
-            travel: 200, // Default value for missing field  
+            healthcare: parseFloat(data.healthcare_budget.toString()),
+            education: parseFloat(data.education_budget.toString()),
+            travel: parseFloat(data.travel_budget.toString()),
             other: parseFloat(data.other_budget.toString()),
           },
           period: 'monthly'
@@ -87,14 +87,16 @@ export const useSupabaseBudget = () => {
         .from('budgets')
         .upsert({
           user_id: user.id,
-          total_budget: updatedBudget.totalBudget.toString(),
-          food_budget: updatedBudget.categoryBudgets.food.toString(),
-          transport_budget: updatedBudget.categoryBudgets.transportation.toString(),
-          entertainment_budget: updatedBudget.categoryBudgets.entertainment.toString(),
-          shopping_budget: updatedBudget.categoryBudgets.shopping.toString(),
-          bills_budget: updatedBudget.categoryBudgets.bills.toString(),
-          health_budget: updatedBudget.categoryBudgets.healthcare.toString(),
-          other_budget: updatedBudget.categoryBudgets.other.toString(),
+          total_budget: updatedBudget.totalBudget,
+          food_budget: updatedBudget.categoryBudgets.food,
+          transportation_budget: updatedBudget.categoryBudgets.transportation,
+          entertainment_budget: updatedBudget.categoryBudgets.entertainment,
+          shopping_budget: updatedBudget.categoryBudgets.shopping,
+          bills_budget: updatedBudget.categoryBudgets.bills,
+          healthcare_budget: updatedBudget.categoryBudgets.healthcare,
+          education_budget: updatedBudget.categoryBudgets.education,
+          travel_budget: updatedBudget.categoryBudgets.travel,
+          other_budget: updatedBudget.categoryBudgets.other,
         }, {
           onConflict: 'user_id'
         });
